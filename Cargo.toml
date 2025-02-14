@@ -1,0 +1,15 @@
+[package]
+name = "cellular-automata"
+version = "0.1.0"
+edition = "2024"
+
+[profile]
+dev.opt-level = 1
+dev.package."*".opt-level = 3
+release.lto = true
+release.codegen-units = 1
+
+[dependencies]
+bevy = { version = "*", features = ["dynamic_linking", "trace"] }
+avian2d = { version = "*", features = ["simd"] }
+rand = "*"
