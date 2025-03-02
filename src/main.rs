@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 
-mod camera_control;
-mod control;
+mod camera;
+mod input;
 mod world_grid;
+
+mod cell;
 
 fn main() {
     let mut app = App::new();
@@ -14,22 +16,10 @@ fn main() {
             }),
             ..default()
         }))
-        .add_systems(Startup, setup)
-        .add_systems(First, control::handle_mouse)
-        .add_systems(
-            Update,
-            (world_grid::draw_grid, world_grid::draw_arrow).chain(),
-        )
-        .init_resource::<control::MouseAction>()
-        .add_systems(
-            Update,
-            camera_control::drag_camera
-                .run_if(|state: Res<control::MouseAction>| state.right.is_dragged()),
-        );
+        .add_plugins(input::InputPlugin)
+        .add_plugins(cell::CellPlugin)
+        .add_plugins(camera::CameraPlugin)
+        .add_plugins(world_grid::GridPlugin);
 
     app.run();
-}
-
-fn setup(mut cmd: Commands) {
-    cmd.spawn(Camera2d);
 }

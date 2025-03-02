@@ -1,13 +1,28 @@
 use bevy::prelude::*;
 
-use crate::control;
+use crate::input;
+
+pub struct CameraPlugin;
+
+impl Plugin for CameraPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_camera).add_systems(
+            Update,
+            drag_camera.run_if(|mouse: Res<input::MouseAct>| mouse.right.is_dragged()),
+        );
+    }
+}
+
+fn spawn_camera(mut cmd: Commands) {
+    cmd.spawn(Camera2d);
+}
 
 pub fn drag_camera(
     mut camera: Single<&mut Transform, With<Camera2d>>,
-    delta: Res<control::MouseAction>,
+    mouse: Res<input::MouseAct>,
     // delta: Res<AccumulatedMouseMotion>,
 ) {
-    let control::ButtonAction::Dragged(delta) = delta.right else {
+    let input::CBAct::Dragged(delta) = mouse.right else {
         return;
     };
     camera.translation.x -= delta.x;

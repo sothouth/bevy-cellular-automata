@@ -1,6 +1,14 @@
 use bevy::prelude::*;
 
-use crate::camera_control::correct_camera;
+use crate::camera::correct_camera;
+
+pub struct GridPlugin;
+
+impl Plugin for GridPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, (draw_grid, draw_arrow).chain());
+    }
+}
 
 #[derive(Component)]
 pub struct GridLine;
