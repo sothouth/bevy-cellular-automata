@@ -48,7 +48,7 @@ const NEIGHBORS: [IVec2; 8] = [
 ];
 
 #[derive(Debug, Component)]
-// #[require(Sprite, Transform)]
+// #[require(Sprite(|| Sprite::from_color(Color::WHITE, Vec2::new(CELL_SIZE as f32, CELL_SIZE as f32))), Transform(|cell:&Cell| get_pos(&cell.idx)))]
 pub struct Cell {
     pub idx: IVec2,
 }

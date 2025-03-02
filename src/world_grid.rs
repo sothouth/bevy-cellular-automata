@@ -26,7 +26,7 @@ pub fn draw_arrow(mut cmd: Commands) {
 
 pub fn draw_grid(
     mut cmd: Commands,
-    camera: Single<(&Camera, &Transform)>,
+    camera: Single<(&Camera, &Transform, &OrthographicProjection), With<Camera2d>>,
     lines: Query<Entity, With<GridLine>>,
 ) {
     lines

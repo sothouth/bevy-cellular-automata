@@ -6,6 +6,8 @@ use bevy::{
     window::PrimaryWindow,
 };
 
+use crate::camera::correct_camera;
+
 #[derive(Debug, Resource, Default)]
 pub struct MouseAct {
     pub acts: usize,
@@ -88,22 +90,17 @@ pub fn handle_mouse(
     time: Res<Time>,
     mut state: ResMut<MouseAct>,
     pos: Single<&Window, With<PrimaryWindow>>,
-    camera: Single<(&Camera, &Transform)>,
+    camera: Single<(&Camera, &Transform, &OrthographicProjection), With<Camera2d>>,
     mouse: Res<ButtonInput<MouseButton>>,
     motion: Res<AccumulatedMouseMotion>,
     scroll: Res<AccumulatedMouseScroll>,
 ) {
     state.pos = pos.cursor_position().map(|pos| {
         let y_reflected_pos = Vec2::new(pos.x, -pos.y);
-        let left_top = {
-            let (camera, transform) = camera.into_inner();
-            let (half_size, center_pos) = (
-                camera.logical_viewport_size().unwrap() / 2.,
-                transform.translation.truncate(),
-            );
-            Vec2::new(center_pos.x - half_size.x, center_pos.y + half_size.y)
-        };
-        y_reflected_pos + left_top
+        let scaled_y_reflected_pos = y_reflected_pos * camera.2.scale;
+        let (left_bottom, right_top, _) = correct_camera(camera.into_inner());
+        let left_top = Vec2::new(left_bottom.x, right_top.y);
+        scaled_y_reflected_pos + left_top
     });
 
     if scroll.delta != Vec2::ZERO && state.scroll == Vec2::ZERO {
