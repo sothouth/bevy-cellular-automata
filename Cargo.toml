@@ -7,7 +7,7 @@ edition = "2024"
 dev.opt-level = 1
 dev.package."*".opt-level = 3
 release.lto = true
-release.codegen-units = 1
+# release.codegen-units = 1
 
 [dependencies]
 bevy = { version = "*", features = ["dynamic_linking", "trace"] }
