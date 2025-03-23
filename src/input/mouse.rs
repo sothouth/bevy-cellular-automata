@@ -90,14 +90,17 @@ pub fn handle_mouse(
     time: Res<Time>,
     mut state: ResMut<MouseAct>,
     pos: Single<&Window, With<PrimaryWindow>>,
-    camera: Single<(&Camera, &Transform, &OrthographicProjection), With<Camera2d>>,
+    camera: Single<(&Camera, &Transform, &Projection)>,
     mouse: Res<ButtonInput<MouseButton>>,
     motion: Res<AccumulatedMouseMotion>,
     scroll: Res<AccumulatedMouseScroll>,
 ) {
     state.pos = pos.cursor_position().map(|pos| {
+        let Projection::Orthographic(projection) = camera.2 else {
+            return Vec2::ZERO;
+        };
         let y_reflected_pos = Vec2::new(pos.x, -pos.y);
-        let scaled_y_reflected_pos = y_reflected_pos * camera.2.scale;
+        let scaled_y_reflected_pos = y_reflected_pos * projection.scale;
         let (left_bottom, right_top, _) = correct_camera(camera.into_inner());
         let left_top = Vec2::new(left_bottom.x, right_top.y);
         scaled_y_reflected_pos + left_top

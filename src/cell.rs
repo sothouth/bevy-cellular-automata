@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::hashbrown::HashMap};
+use bevy::{platform_support::collections::HashMap, prelude::*};
 
 use crate::input;
 

@@ -6,7 +6,15 @@ pub struct GridPlugin;
 
 impl Plugin for GridPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (draw_grid, draw_arrow).chain());
+        app.add_systems(
+            Update,
+            (draw_grid, draw_arrow).chain().run_if(
+                |camera: Query<
+                    Entity,
+                    (With<Camera>, Or<(Changed<Transform>, Changed<Projection>)>),
+                >| camera.iter().next().is_some(),
+            ),
+        );
     }
 }
 
@@ -26,7 +34,7 @@ pub fn draw_arrow(mut cmd: Commands) {
 
 pub fn draw_grid(
     mut cmd: Commands,
-    camera: Single<(&Camera, &Transform, &OrthographicProjection), With<Camera2d>>,
+    camera: Single<(&Camera, &Transform, &Projection)>,
     lines: Query<Entity, With<GridLine>>,
 ) {
     lines

@@ -23,11 +23,14 @@ fn spawn_camera(mut cmd: Commands) {
 }
 
 pub fn drag_camera(
-    camera: Single<(&mut Transform, &OrthographicProjection), With<Camera2d>>,
+    camera: Single<(&mut Transform, &Projection), With<Camera>>,
     mouse: Res<input::MouseAct>,
     // delta: Res<AccumulatedMouseMotion>,
 ) {
     let (mut camera, projection) = camera.into_inner();
+    let Projection::Orthographic(projection) = projection else {
+        return;
+    };
     let input::CBAct::Dragged(delta) = mouse.right else {
         return;
     };
@@ -37,12 +40,15 @@ pub fn drag_camera(
 }
 
 fn zoom(
-    mut orthographic_projection: Single<&mut OrthographicProjection, With<Camera2d>>,
+    projection: Single<&mut Projection, With<Camera>>,
     mouse: Res<input::MouseAct>,
     // scroll: Res<AccumulatedMouseScroll>,
 ) {
     // let orthographic_projection = camera.into_inner();
-    orthographic_projection.scale *= 1.0 - mouse.scroll.y * 0.1;
+    let Projection::Orthographic(projection) = &mut *projection.into_inner() else {
+        return;
+    };
+    projection.scale *= 1.0 - mouse.scroll.y * 0.1;
     // camera.scale *= scale;
     // camera.translation *= scale;
 }
@@ -50,8 +56,11 @@ fn zoom(
 /// return (min, max, cet)
 #[inline]
 pub fn correct_camera(
-    (camera, transform, projection): (&Camera, &Transform, &OrthographicProjection),
+    (camera, transform, projection): (&Camera, &Transform, &Projection),
 ) -> (Vec2, Vec2, Vec2) {
+    let Projection::Orthographic(projection) = projection else {
+        return (Vec2::ZERO, Vec2::ZERO, Vec2::ZERO);
+    };
     let rect = camera.logical_viewport_rect().unwrap();
     let Rect { mut min, mut max } = rect;
     let scale = projection.scale;

@@ -10,6 +10,10 @@ release.lto = true
 # release.codegen-units = 1
 
 [dependencies]
-bevy = { version = "*", features = ["dynamic_linking", "trace"] }
+bevy = { git = "https://github.com/bevyengine/bevy.git", branch = "main", features = [
+    "dynamic_linking",
+    "trace",
+] }
+# bevy = { version = "*", features = ["dynamic_linking", "trace"] }
 avian2d = { version = "*", features = ["simd"] }
 rand = "*"
